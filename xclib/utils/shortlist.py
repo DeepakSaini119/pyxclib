@@ -1,4 +1,4 @@
-from .ann import NearestNeighbor, HNSW, HNSWLib
+from .ann import NearestNeighbor, HNSW
 import pickle
 from .clustering import Cluster
 import numpy as np
@@ -152,15 +152,6 @@ class Shortlist(object):
             self.index = NearestNeighbor(
                 num_neighbours=self.num_neighbours,
                 method='brute',
-                num_threads=self.num_threads
-            )
-        elif self.method == 'hnswlib':
-            self.index = HNSWLib(
-                space=self.space,
-                M=self.M,
-                efC=self.efC,
-                efS=self.efS,
-                num_neighbours=self.num_neighbours,
                 num_threads=self.num_threads
             )
         elif self.method == 'hnsw':

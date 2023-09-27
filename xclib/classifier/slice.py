@@ -84,7 +84,7 @@ class Slice(BaseClassifier):
     """
 
     def __init__(self, solver='liblinear', loss='squared_hinge', M=100,
-                 method='hnswlib', efC=300, num_neighbours=300, efS=300,
+                 method='hnsw', efC=300, num_neighbours=300, efS=300,
                  C=1.0, verbose=0, max_iter=20, tol=0.001, threshold=0.01,
                  feature_type='dense', dual=True, use_bias=True,
                  order='centroids', num_threads=12, batch_size=1000,

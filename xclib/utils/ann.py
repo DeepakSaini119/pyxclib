@@ -5,7 +5,6 @@
     TODO: Add functionanlity to use GPUs
 """
 
-import nmslib
 import hnswlib
 from sklearn.neighbors import NearestNeighbors
 import pickle
@@ -62,74 +61,6 @@ class NearestNeighbor(object):
 
 
 class HNSW(object):
-    """HNSW algorithm for ANN Search
-    Parameters
-    ----------
-    M: int
-        HNSW M (Usually 100)
-    efC: int
-        construction parameter (Usually 300)
-    efS: int
-        search parameter (Usually 300)
-    num_neighbours: int
-        #neighbours
-    num_threads: int
-        #threads to cluster
-    """
-
-    def __init__(self, M, efC, efS, num_neighbours, num_threads,
-                 space='cosine'):
-        space_map = {'cosine': 'cosinesimil'}
-        space = space_map[space]
-        self.index = nmslib.init(method='hnsw', space=space)
-        self.M = M
-        self.num_threads = num_threads
-        self.efC = efC
-        self.efS = efS
-        self.num_neighbours = num_neighbours
-
-    def fit(self, data, print_progress=True):
-        self.index.addDataPointBatch(data)
-        self.index.createIndex(
-            {'M': self.M,
-             'indexThreadQty': self.num_threads,
-             'efConstruction': self.efC},
-            print_progress=print_progress
-            )
-
-    def _filter(self, output):
-        indices = np.zeros((len(output), self.efS), dtype=np.int64)
-        distances = np.zeros((len(output), self.efS), dtype=np.float32)
-        for idx, item in enumerate(output):
-            indices[idx] = item[0]
-            distances[idx] = item[1]
-        return indices, distances
-
-    def _predict(self, data):
-        output = self.index.knnQueryBatch(
-            data, k=self.num_neighbours, num_threads=self.num_threads)
-        indices, distances = self._filter(output)
-        return indices, distances
-
-    def _set_query_time_params(self, efS=None, num_neighbours=None):
-        self.efS = efS if efS is not None else self.efS
-        if num_neighbours is not None:
-            self.num_neighbours = num_neighbours
-        self.index.setQueryTimeParams({'efSearch': self.efS})
-
-    def predict(self, data, efS=None, num_neighbours=None):
-        self._set_query_time_params(efS, num_neighbours)
-        indices, distances = self._predict(data)
-        return indices, distances
-
-    def save(self, fname):
-        nmslib.saveIndex(self.index, fname)
-
-    def load(self, fname):
-        nmslib.loadIndex(self.index, fname)
-
-
-class HNSWLib(object):
     def __init__(self, M, efC, efS, num_neighbours, space='cosine',
                  num_threads=12, verbose=False):
         self.verbose = verbose
